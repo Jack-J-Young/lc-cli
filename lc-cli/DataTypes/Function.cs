@@ -93,6 +93,9 @@ namespace lc_cli.DataTypes
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.Write(Input);
 
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(".");
+
             Body.Print();
 
             Console.ForegroundColor = ConsoleColor.Cyan;
