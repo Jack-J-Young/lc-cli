@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace lc_cli.DataTypes
     {
         public List<Element> Elements { get; set; }
 
-        public void Print()
+        public void aPrint()
         {
             bool lastWasVar = false;
 
@@ -42,6 +43,7 @@ namespace lc_cli.DataTypes
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.Write(".");
 
+                    
                     function.Body.Print();
 
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -55,7 +57,7 @@ namespace lc_cli.DataTypes
                     Segment segment = (Segment)element;
 
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write("(");
+                    Console.Write((lastWasVar ? " " : "") + "(");
 
                     segment.Print();
 
@@ -65,6 +67,13 @@ namespace lc_cli.DataTypes
                     lastWasVar = false;
                 }
             }
+        }
+
+        public override Element RedundancyCheck()
+        {
+            for (var i = 0; i < Elements.Count; i++) Elements[i] = Elements[i].RedundancyCheck();
+
+            return Elements.Count == 1 ? Elements[0] : this;
         }
 
         public override Segment Copy()
@@ -77,6 +86,20 @@ namespace lc_cli.DataTypes
             {
                 Elements = copiedElements
             };
+        }
+
+        public override void Print()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("(");
+
+            foreach(Element element in Elements)
+            {
+                element.Print();
+            }
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(")");
         }
     }
 }

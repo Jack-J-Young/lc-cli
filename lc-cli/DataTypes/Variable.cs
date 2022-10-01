@@ -17,5 +17,11 @@ namespace lc_cli.DataTypes
                 Name = Name
             };
         }
+
+        public override void Print()
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(Name);
+        }
     }
 }

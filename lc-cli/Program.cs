@@ -73,9 +73,7 @@ namespace lc_cli
             seg.Print();
             Console.WriteLine();
 
-            Console.WriteLine("\nSolved:\n");
-
-            Solver.Solve(seg, true).Print();
+            Solver.Solve(seg, true)/*.Print()*/;
             Console.WriteLine();
         }
     }

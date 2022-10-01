@@ -11,48 +11,68 @@ namespace lc_cli.DataTypes
     {
         public string Input { get; set; }
 
-        public Segment Body { get; set; }
+        public Element Body { get; set; }
 
-        public Segment ApplyElement(Element element)
+        public Element ApplyElement(Element element)
         {
-            var output = new Segment { Elements = new() };
+            //Console.ForegroundColor = ConsoleColor.Green;
+            //Console.Write("F> ");
+            //Console.ForegroundColor = ConsoleColor.Yellow;
+            //Console.Write(Input);
+            //Console.ForegroundColor = ConsoleColor.Red;
+            //Console.Write("|");
+            //Body.Print();
+            //Console.ForegroundColor = ConsoleColor.Red;
+            //Console.Write("|");
+            //element.Print();
+            //Console.WriteLine();
 
-            foreach (Element bElement in Body.Elements)
+            var applied = ApplyElementAtomicly(Input, Body, element);
+
+            //Console.ForegroundColor = ConsoleColor.Green;
+            //Console.Write("A> ");
+            //applied.Print();
+            //Console.WriteLine();
+
+            return applied;
+        }
+
+        public static Element ApplyElementAtomicly(string argument, Element body, Element element)
+        {
+            Type bodyType = body.GetType();
+
+            if (bodyType == typeof(Variable))
             {
-                if (bElement.GetType() == typeof(Variable))
-                {
-                    output.Elements.Add((bElement as Variable)!.Name == Input ? element.Copy() : bElement);
-                }
-                else if (bElement.GetType() == typeof(Segment))
-                {
-                    var tempFunction = new Function
-                    {
-                        Input = Input,
-                        Body = (bElement as Segment)!.Copy(),
-                    };
+                return argument == ((Variable)body).Name ? element : body;
+            }
+            else if (bodyType == typeof(Segment))
+            {
+                var oldSegment = ((Segment)body).Copy();
 
-                    output.Elements.Add(tempFunction.ApplyElement(element));
-                }
-                else if (bElement.GetType() == typeof(Function))
+                for (var i = 0; i < oldSegment.Elements.Count; i++)
                 {
-                    var function = (bElement as Function)!.Copy();
-
-                    if (function.Input != Input)
-                    {
-                        var tempFunction = new Function
-                        {
-                            Input = Input,
-                            Body = function.Body.Copy(),
-                        };
-
-                        function.Body = tempFunction.ApplyElement(element);
-                    }
-                    
-                    output.Elements.Add(function);
+                    oldSegment.Elements[i] = ApplyElementAtomicly(argument, oldSegment.Elements[i], element);
                 }
+
+                return oldSegment;
+            }
+            else if (bodyType == typeof(Function))
+            {
+                var oldFunction = ((Function)body).Copy();
+
+                oldFunction.Body = ApplyElementAtomicly(argument, oldFunction.Body.Copy(), element);
+
+                return oldFunction;
             }
 
-            return output;
+            return new Variable();
+        }
+
+        public override Element RedundancyCheck()
+        {
+            Body = Body.RedundancyCheck();
+
+            return this;
         }
 
         public override Function Copy()
@@ -62,6 +82,20 @@ namespace lc_cli.DataTypes
                 Input = Input,
                 Body = Body.Copy()
             };
+        }
+
+        public override void Print()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("(^");
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write(Input);
+
+            Body.Print();
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(")");
         }
     }
 }

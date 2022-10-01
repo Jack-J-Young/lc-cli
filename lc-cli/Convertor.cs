@@ -84,39 +84,39 @@ namespace lc_cli
             return -1;
         }
 
-        public static string LcToString(Segment segment)
-        {
-            var output = String.Empty;
+        //public static string LcToString(Segment segment)
+        //{
+        //    var output = String.Empty;
 
-            foreach (Element element in segment.Elements)
-            {
-                output += output.Length == 0 ? "" : " ";
+        //    foreach (Element element in segment.Elements)
+        //    {
+        //        output += output.Length == 0 ? "" : " ";
 
-                Type elementType = element.GetType();
+        //        Type elementType = element.GetType();
 
-                if (elementType == typeof(Variable))
-                {
-                    Variable variable = (Variable)element;
+        //        if (elementType == typeof(Variable))
+        //        {
+        //            Variable variable = (Variable)element;
 
-                    output += $"{variable.Name}";
-                }
+        //            output += $"{variable.Name}";
+        //        }
 
-                if (elementType == typeof(Function))
-                {
-                    Function function = (Function)element;
+        //        if (elementType == typeof(Function))
+        //        {
+        //            Function function = (Function)element;
 
-                    output += $"(^{function.Input}.{LcToString(function.Body)})";
-                }
+        //            output += $"(^{function.Input}.{LcToString(function.Body)})";
+        //        }
 
-                if (elementType == typeof(Segment))
-                {
-                    Segment tsegment = (Segment)element;
+        //        if (elementType == typeof(Segment))
+        //        {
+        //            Segment tsegment = (Segment)element;
 
-                    output += $"({LcToString(tsegment)})";
-                }
-            }
+        //            output += $"({LcToString(tsegment)})";
+        //        }
+        //    }
 
-            return output;
-        }
+        //    return output;
+        //}
     }
 }
