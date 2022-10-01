@@ -1,15 +1,11 @@
 ﻿using lc_cli.DataTypes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using lc_cli.Library;
 
 namespace lc_cli
 {
     public class Solver
     {
-        public static Segment Solve(Segment input, bool verbose)
+        public static Segment Solve(Segment input, bool verbose, Dictionary dictionary)
         {
             //var change = false;
 
@@ -40,7 +36,7 @@ namespace lc_cli
 
             while (changed)
             {
-                var reduction = BetaReduce(output);
+                var reduction = BetaReduce(output, dictionary);
 
                 changed = reduction.changed;
                 output = reduction.reducedSegment;
@@ -48,7 +44,7 @@ namespace lc_cli
 
                 if (verbose && changed)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
                     Console.Write("~>");
                     output.Print();
                     Console.WriteLine();
@@ -58,7 +54,7 @@ namespace lc_cli
             return output;
         }
 
-        public static (Segment reducedSegment, bool changed) BetaReduce(Segment input)
+        public static (Segment reducedSegment, bool changed) BetaReduce(Segment input, Dictionary dictionary)
         {
             var changed = false;
 
@@ -68,7 +64,7 @@ namespace lc_cli
             {
                 if (input.Elements[i].GetType() == typeof(Segment) && !changed)
                 {
-                    var result = BetaReduce((Segment)input.Elements[i]);
+                    var result = BetaReduce((Segment)input.Elements[i], dictionary);
 
                     output.Elements.Add(result.reducedSegment);
                     changed = result.changed;
@@ -86,6 +82,12 @@ namespace lc_cli
                     {
                         output.Elements.Add(input.Elements[i].Copy());
                     }
+                }
+                else if (input.Elements[i].GetType() == typeof(LibrarySegment) && !changed)
+                {
+                    output.Elements.Add(Convertor.ConvertStringToLc(dictionary[((LibrarySegment)input.Elements[i].Copy()).Name]));
+
+                    changed = true;
                 }
                 else
                 {

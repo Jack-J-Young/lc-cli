@@ -93,9 +93,15 @@ namespace lc_cli.DataTypes
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("(");
 
+            var start = true;
             foreach(Element element in Elements)
             {
+                if (!start)
+                    Console.Write(' ');
+
                 element.Print();
+
+                start = false;
             }
 
             Console.ForegroundColor = ConsoleColor.White;

@@ -1,4 +1,5 @@
 ﻿using lc_cli.DataTypes;
+using lc_cli.Library;
 
 namespace lc_cli
 {
@@ -66,15 +67,27 @@ namespace lc_cli
             //        }
             //    }
             //};
+            //Dictionary dictionary = new Dictionary();
+            //dictionary.Add("IF", "(^a.(^t.(^f.a t f)))");
+            var dictionary = Loader.LoadFromDir(@"C:\Temp\library");
 
-            var seg = Convertor.ConvertString(Console.ReadLine());
+            var input = Console.ReadLine();
 
-            //Console.WriteLine(Convertor.LcToString(seg));
-            seg.Print();
-            Console.WriteLine();
+            if (input.Contains('='))
+            {
+                Convertor.ConvertToLibrary(input, @"C:\Temp\library", dictionary);
+            }
+            else
+            {
+                var seg = Convertor.ConvertStringToLc(input);
 
-            Solver.Solve(seg, true)/*.Print()*/;
-            Console.WriteLine();
+                //Console.WriteLine(Convertor.LcToString(seg));
+                seg.Print();
+                Console.WriteLine();
+
+                Solver.Solve(seg, true, dictionary)/*.Print()*/;
+                Console.WriteLine();
+            }
         }
     }
 

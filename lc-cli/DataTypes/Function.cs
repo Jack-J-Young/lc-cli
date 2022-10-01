@@ -63,9 +63,10 @@ namespace lc_cli.DataTypes
                 oldFunction.Body = ApplyElementAtomicly(argument, oldFunction.Body.Copy(), element);
 
                 return oldFunction;
+            } else
+            {
+                return body;
             }
-
-            return new Variable();
         }
 
         public override Element RedundancyCheck()
