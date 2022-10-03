@@ -7,8 +7,33 @@ Basic input and interpretation
 
 Basic solving, not fully tested
 
+Library functions allowing you to define saved functions and use them later
+
+## Examples
+
+```
+^> (^x.x y) e
+
+// Will reduce to
+ ~> (e y)
+```
+
+Library functions
+
+```
+^> TRUE=(^t.(^f.t))
+
+// Then
+
+^> TRUE a b
+
+// Will reduce to
+~> ((^t.(^f.t)) a b)
+~> ((^f.a) b)
+~> (a)
+```
+
 ## TODO:
-Add library feature to save and re-use snippits
 
 Proper UI
 
