@@ -123,40 +123,5 @@ namespace lc_cli
 
             return -1;
         }
-
-        //public static string LcToString(Segment segment)
-        //{
-        //    var output = String.Empty;
-
-        //    foreach (Element element in segment.Elements)
-        //    {
-        //        output += output.Length == 0 ? "" : " ";
-
-        //        Type elementType = element.GetType();
-
-        //        if (elementType == typeof(Variable))
-        //        {
-        //            Variable variable = (Variable)element;
-
-        //            output += $"{variable.Name}";
-        //        }
-
-        //        if (elementType == typeof(Function))
-        //        {
-        //            Function function = (Function)element;
-
-        //            output += $"(^{function.Input}.{LcToString(function.Body)})";
-        //        }
-
-        //        if (elementType == typeof(Segment))
-        //        {
-        //            Segment tsegment = (Segment)element;
-
-        //            output += $"({LcToString(tsegment)})";
-        //        }
-        //    }
-
-        //    return output;
-        //}
     }
 }

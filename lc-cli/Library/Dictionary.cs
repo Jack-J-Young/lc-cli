@@ -16,11 +16,20 @@ namespace lc_cli.Library
             {
                 return Library.ContainsKey(function) ? Library[function] : String.Empty;
             }
+            set
+            {
+                Library[function] = value;
+            }
         }
 
         public void Add(string name, string function)
         {
             Library.Add(name, function);
+        }
+
+        public bool Has(string name)
+        {
+            return Library.ContainsKey(name);
         }
     }
 }

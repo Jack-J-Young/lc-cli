@@ -23,5 +23,11 @@ namespace lc_cli.DataTypes
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write(Name);
         }
+
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

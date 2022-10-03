@@ -107,5 +107,20 @@ namespace lc_cli.DataTypes
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write(")");
         }
+
+        public override string ToString()
+        {
+            var contents = String.Empty;
+
+            var start = true;
+            foreach (Element element in Elements)
+            {
+                contents += (start ? "" : ' ') + element.ToString();
+
+                start = false;
+            }
+
+            return $"({contents})";
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace lc_cli.DataTypes
     {
         public string Input { get; set; }
 
-        public Element Body { get; set; }
+        public Segment Body { get; set; }
 
         public Element ApplyElement(Element element)
         {
@@ -60,10 +60,11 @@ namespace lc_cli.DataTypes
             {
                 var oldFunction = ((Function)body).Copy();
 
-                oldFunction.Body = ApplyElementAtomicly(argument, oldFunction.Body.Copy(), element);
+                oldFunction.Body.Elements = new List<Element> { ApplyElementAtomicly(argument, oldFunction.Body.Copy(), element) };
 
                 return oldFunction;
-            } else
+            }
+            else
             {
                 return body;
             }
@@ -71,7 +72,7 @@ namespace lc_cli.DataTypes
 
         public override Element RedundancyCheck()
         {
-            Body = Body.RedundancyCheck();
+            Body.RedundancyCheck();
 
             return this;
         }
@@ -100,6 +101,11 @@ namespace lc_cli.DataTypes
 
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(")");
+        }
+
+        public override string ToString()
+        {
+            return $"(^{Input}.{Body.ToString()})";
         }
     }
 }

@@ -71,22 +71,30 @@ namespace lc_cli
             //dictionary.Add("IF", "(^a.(^t.(^f.a t f)))");
             var dictionary = Loader.LoadFromDir(@"C:\Temp\library");
 
-            var input = Console.ReadLine();
-
-            if (input.Contains('='))
+            while(true)
             {
-                Convertor.ConvertToLibrary(input, @"C:\Temp\library", dictionary);
-            }
-            else
-            {
-                var seg = Convertor.ConvertStringToLc(input);
+                Console.Write("^> ");
+                var input = Console.ReadLine();
 
-                //Console.WriteLine(Convertor.LcToString(seg));
-                seg.Print();
-                Console.WriteLine();
+                if (input.Contains('='))
+                {
+                    Convertor.ConvertToLibrary(input, @"C:\Temp\library", dictionary);
+                }
+                else
+                {
+                    var seg = Convertor.ConvertStringToLc(input);
 
-                Solver.Solve(seg, true, dictionary)/*.Print()*/;
-                Console.WriteLine();
+                    //Console.WriteLine(Convertor.LcToString(seg));
+
+                    Console.Write("    ");
+                    seg.Print();
+                    Console.WriteLine();
+
+                    Segment solved = Solver.Solve(seg, true, dictionary)/*.Print()*/;
+                    Console.WriteLine();
+
+                    dictionary["LAST"] = solved.ToString();
+                }
             }
         }
     }

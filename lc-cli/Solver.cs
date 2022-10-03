@@ -7,29 +7,8 @@ namespace lc_cli
     {
         public static Segment Solve(Segment input, bool verbose, Dictionary dictionary)
         {
-            //var change = false;
-
-            //var output = new Segment { Elements = new() };
-
-            //for(int i = 0; i < input.Elements.Count; i++)
-            //{
-            //    if (input.Elements[i].GetType() == typeof(Function))
-            //    {
-            //        if (i + 1 < input.Elements.Count)
-            //        {
-            //            var appliedData = (input.Elements[i] as Function)!.ApplyElement(input.Elements[i + 1]);
-            //            foreach (Element element in appliedData.Elements)
-            //                output.Elements.Add(element);
-
-            //            i = input.Elements.Count;
-            //            change = true;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        output.Elements.Add(input.Elements[i]);
-            //    }
-            //}
+            input = ApplyLibrarySegments(input, verbose, dictionary);
+            Console.WriteLine();
 
             var changed = true;
             Segment output = input.Copy();
@@ -45,7 +24,32 @@ namespace lc_cli
                 if (verbose && changed)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                    Console.Write("~>");
+                    Console.Write("  ~>");
+                    output.Print();
+                    Console.WriteLine();
+                }
+            }
+
+            return output;
+        }
+
+        public static Segment ApplyLibrarySegments(Segment input, bool verbose, Dictionary dictionary)
+        {
+            var changed = true;
+            Segment output = input.Copy();
+
+            while (changed)
+            {
+                var reduction = ApplyLibraryAtomicly(output, dictionary);
+
+                changed = reduction.changed;
+                output = reduction.reducedSegment;
+                output.RedundancyCheck();
+
+                if (verbose && changed)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.Write("  ~>");
                     output.Print();
                     Console.WriteLine();
                 }
@@ -71,17 +75,68 @@ namespace lc_cli
                 }
                 else if (input.Elements[i].GetType() == typeof(Function) && !changed)
                 {
+                    var function = ((Function)input.Elements[i]).Copy();
+
                     if (i + 1 < input.Elements.Count)
                     {
-                        output.Elements.Add(((Function)input.Elements[i]).ApplyElement(input.Elements[i + 1]));
+                        output.Elements.Add(function.ApplyElement(input.Elements[i + 1]));
 
                         i++;
                         changed = true;
                     }
                     else
                     {
-                        output.Elements.Add(input.Elements[i].Copy());
+                        if (function.Body.GetType() == typeof(Segment))
+                        {
+                            var betaReducedSeg = BetaReduce((Segment)function.Body, dictionary);
+                            function.Body = betaReducedSeg.reducedSegment;
+
+                            output.Elements.Add(function);
+                            changed = betaReducedSeg.changed;
+                        }
+                        else
+                            output.Elements.Add(function);
                     }
+                }
+                //else if (input.Elements[i].GetType() == typeof(LibrarySegment) && !changed)
+                //{
+                //    output.Elements.Add(Convertor.ConvertStringToLc(dictionary[((LibrarySegment)input.Elements[i].Copy()).Name]));
+
+                //    changed = true;
+                //}
+                else
+                {
+                    output.Elements.Add(input.Elements[i].Copy());
+                }
+            }
+
+            return (output, changed);
+        }
+
+        public static (Segment reducedSegment, bool changed) ApplyLibraryAtomicly(Segment input, Dictionary dictionary)
+        {
+            var changed = false;
+
+            var output = new Segment { Elements = new() };
+
+            for (int i = 0; i < input.Elements.Count; i++)
+            {
+                if (input.Elements[i].GetType() == typeof(Segment) && !changed)
+                {
+                    var result = ApplyLibraryAtomicly((Segment)input.Elements[i], dictionary);
+
+                    output.Elements.Add(result.reducedSegment);
+                    changed = result.changed;
+                }
+                else if (input.Elements[i].GetType() == typeof(Function) && !changed)
+                {
+                    var function = ((Function)input.Elements[i]).Copy();
+
+                    var betaReducedSeg = ApplyLibraryAtomicly((Segment)function.Body, dictionary);
+                    function.Body = betaReducedSeg.reducedSegment;
+
+                    output.Elements.Add(function);
+                    changed = betaReducedSeg.changed;
                 }
                 else if (input.Elements[i].GetType() == typeof(LibrarySegment) && !changed)
                 {
