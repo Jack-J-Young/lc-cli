@@ -32,7 +32,7 @@ This new solving method alpharenames all variables programatically then will che
 
 Repeating until no more reductions can be done
 
-Library functions (deprecated)
+### Library functions (deprecated)
 
 ```
 ^> TRUE=(^t.(^f.t))
