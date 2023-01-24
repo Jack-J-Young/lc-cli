@@ -18,7 +18,21 @@ Library functions allowing you to define saved functions and use them later
  ~> (e y)
 ```
 
-Library functions
+```
+(sugared)
+^> (^xy.y x) e a
+
+// Will reduce to
+ ~> (a e)
+```
+
+### Smart Solver
+
+This new solving method alpharenames all variables programatically then will check all possible reductions and reduce the one with biggest impact (the one with the least ammount of total variables)
+
+Repeating until no more reductions can be done
+
+Library functions (deprecated)
 
 ```
 ^> TRUE=(^t.(^f.t))
@@ -32,9 +46,3 @@ Library functions
 ~> ((^f.a) b)
 ~> (a)
 ```
-
-## TODO:
-
-Proper UI
-
-Input and output using args
