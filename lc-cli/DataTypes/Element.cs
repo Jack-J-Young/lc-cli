@@ -20,7 +20,12 @@ namespace lc_cli.DataTypes
 
         public virtual void Print()
         {
-            
+
+        }
+
+        public virtual void OldPrint()
+        {
+
         }
     }
 }

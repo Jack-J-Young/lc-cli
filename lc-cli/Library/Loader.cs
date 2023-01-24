@@ -18,7 +18,11 @@ namespace lc_cli.Library
 
             foreach(FileInfo fileInfo in files)
             {
-                output.Add(fileInfo.Name.Split('.')[0], fileInfo.OpenText().ReadToEnd().Replace("\n", ""));
+                var reader = fileInfo.OpenText();
+
+                output.Add(fileInfo.Name.Split('.')[0], reader.ReadToEnd().Replace("\n", ""));
+
+                reader.Close();
             }
 
             return output;

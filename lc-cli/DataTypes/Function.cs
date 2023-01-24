@@ -9,7 +9,7 @@ namespace lc_cli.DataTypes
 {
     public class Function : Element
     {
-        public string Input { get; set; }
+        public List<Variable> Inputs { get; set; }
 
         public Segment Body { get; set; }
 
@@ -27,14 +27,23 @@ namespace lc_cli.DataTypes
             //element.Print();
             //Console.WriteLine();
 
-            var applied = ApplyElementAtomicly(Input, Body, element);
+            var first = Inputs.First();
 
-            //Console.ForegroundColor = ConsoleColor.Green;
-            //Console.Write("A> ");
-            //applied.Print();
-            //Console.WriteLine();
+            var applied = ApplyElementAtomicly(first.Name + first.FunctionId, Body, element);
 
-            return applied;
+            if (Inputs.Count == 1)
+                return applied;
+            else
+            {
+                var copy = this.Copy();
+                copy.Inputs.RemoveAt(0);
+                if (applied.GetType() == typeof(Segment))
+                    copy.Body = (Segment)applied;
+                else
+                    copy.Body = new Segment{ Elements = { applied } };
+
+                return copy;
+            }
         }
 
         public static Element ApplyElementAtomicly(string argument, Element body, Element element)
@@ -43,7 +52,9 @@ namespace lc_cli.DataTypes
 
             if (bodyType == typeof(Variable))
             {
-                return argument == ((Variable)body).Name ? element : body;
+                var cast = (Variable)body;
+
+                return argument == cast.Name + cast.FunctionId ? element : body;
             }
             else if (bodyType == typeof(Segment))
             {
@@ -79,9 +90,14 @@ namespace lc_cli.DataTypes
 
         public override Function Copy()
         {
+            var copyinputs = new List<Variable>();
+
+            foreach(var a in Inputs)
+                copyinputs.Add(a.Copy());
+
             return new Function
             {
-                Input = Input,
+                Inputs = copyinputs,
                 Body = Body.Copy()
             };
         }
@@ -92,7 +108,8 @@ namespace lc_cli.DataTypes
             Console.Write("(^");
 
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.Write(Input);
+            foreach (var input in Inputs)
+                Console.Write(input.Name + input.FunctionId);
 
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(".");
@@ -103,9 +120,32 @@ namespace lc_cli.DataTypes
             Console.Write(")");
         }
 
+        public override void OldPrint()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("(^");
+
+            Console.ForegroundColor = ConsoleColor.Blue;
+            foreach (var input in Inputs)
+                Console.Write(input.Name);
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(".");
+
+            Body.OldPrint();
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(")");
+        }
+
         public override string ToString()
         {
-            return $"(^{Input}.{Body.ToString()})";
+            var c = "";
+
+            foreach (var input in Inputs)
+               c += input.Name + input.FunctionId;
+
+            return $"(^{c}.{Body.ToString()})";
         }
     }
 }

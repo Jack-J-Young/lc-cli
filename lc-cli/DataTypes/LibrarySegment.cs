@@ -20,5 +20,11 @@ namespace lc_cli.DataTypes
             Console.ForegroundColor = ConsoleColor.Red;
             Console.Write(Name);
         }
+
+        public override void OldPrint()
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(Name);
+        }
     }
 }

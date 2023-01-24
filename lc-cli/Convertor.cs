@@ -1,66 +1,79 @@
 ﻿using lc_cli.DataTypes;
 using lc_cli.Library;
+using System.Reflection.Metadata.Ecma335;
 
 namespace lc_cli
 {
     public class Convertor
     {
-        public static Segment ConvertStringToLc(string input)
+        public static Segment ConvertStringToLc(string input, List<Variable>? library = null, int nestedfunctionId = 1)
         {
+            if (library == null) library = new();
+
             var output = new Segment { Elements = new() };
 
             for(var i = 0; i < input.Length; i++)
             {
                 switch (input[i])
                 {
-                    case '^':
-                        // Function
-
-                        var pointIndex = input.IndexOf('.', i + 1);
-
-                        output.Elements.Add(new Function
-                        {
-                            Input = input.Substring(i + 1, pointIndex - (i + 1)),
-                            Body = ConvertStringToLc(input.Substring(pointIndex + 1)),
-                        });
-
-                        i = input.Length;
-                        break;
                     case '(':
                         // Segment
                         var endIndex = FindEndParenthesis(input, i + 1);
 
-                        var segmentText = input.Substring(i + 1, endIndex - (i + 1));
+                        if(input[i + 1] == '^')
+                        {
+                            // Function
 
-                        var segment = ConvertStringToLc(segmentText);
+                            var pointIndex = input.IndexOf('.', i + 2);
 
-                        output.Elements.Add(segment.Elements.Count == 1 ? segment.Elements.First() : segment);
+                            List<Variable> arguments = new();
 
-                        i = endIndex + 1;
+                            foreach (char c in input.Substring(i + 2, pointIndex - (i + 2)))
+                            {
+                                arguments.Add(new Variable { FunctionId = nestedfunctionId, Name = c + "" });
+                            }
+
+                            var newLibrary = new List<Variable>(library);
+
+                            newLibrary.AddRange(arguments);
+
+                            var bodyString = input.Substring(pointIndex + 1, endIndex - (pointIndex + 1));
+
+                            output.Elements.Add(new Function
+                            {
+                                Inputs = arguments,
+                                Body = ConvertStringToLc(bodyString, newLibrary, nestedfunctionId*10),
+                            });
+                        }
+                        else
+                        {
+                            var segmentText = input.Substring(i + 1, endIndex - (i + 1));
+
+                            var segment = ConvertStringToLc(segmentText, library, nestedfunctionId);
+
+                            output.Elements.Add(segment.Elements.Count == 1 ? segment.Elements.First() : segment);
+                        }
+                        i = endIndex;
+
                         break;
                     default:
-                        if (input[i] >= 97 && input[i] <= 122)
+                        if (/*input[i] >= 97 && input[i] <= 122*/ true)
                         {
                             // Variable
-                            var nextSpaceIndex = input.IndexOf(' ', i);
 
-                            if (nextSpaceIndex == -1)
+                            var match = library.Where(x => x.Name == "" + input[i]).MaxBy(x => x.FunctionId);
+
+                            if (match != null)
                             {
-                                output.Elements.Add(new Variable
-                                {
-                                    Name = input.Substring(i),
-                                });
-
-                                i = input.Length;
+                                output.Elements.Add(match);
                             }
                             else
                             {
                                 output.Elements.Add(new Variable
                                 {
-                                    Name = input.Substring(i, nextSpaceIndex - i),
+                                    Name = input[i] + "",
+                                    FunctionId = nestedfunctionId
                                 });
-
-                                i = nextSpaceIndex;
                             }
                         }
                         else
@@ -89,6 +102,7 @@ namespace lc_cli
                         }
                         break;
                 }
+                nestedfunctionId++;
             }
 
             return output;

@@ -24,7 +24,10 @@ namespace lc_cli.Library
 
         public void Add(string name, string function)
         {
-            Library.Add(name, function);
+            if (Library.ContainsKey(name))
+                Library[name] = function;
+            else
+                Library.Add(name, function);
         }
 
         public bool Has(string name)

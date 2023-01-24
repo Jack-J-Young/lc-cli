@@ -10,15 +10,24 @@ namespace lc_cli.DataTypes
     {
         public string Name { get; set; }
 
+        public int FunctionId { get; set; }
+
         public override Variable Copy()
         {
             return new Variable
             {
-                Name = Name
+                Name = Name,
+                FunctionId = FunctionId
             };
         }
 
         public override void Print()
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(Name + FunctionId);
+        }
+
+        public override void OldPrint()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write(Name);
@@ -27,7 +36,7 @@ namespace lc_cli.DataTypes
 
         public override string ToString()
         {
-            return Name;
+            return Name + FunctionId;
         }
     }
 }
